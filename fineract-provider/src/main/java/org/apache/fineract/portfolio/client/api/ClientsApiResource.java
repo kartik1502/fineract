@@ -48,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.bulkimport.data.GlobalEntityType;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookPopulatorService;
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.core.annotation.AlternativeOperationId;
@@ -288,7 +289,14 @@ public class ClientsApiResource {
     public Long postClientTemplate(@QueryParam("legalFormType") final String legalFormType,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail,
             @FormDataParam("locale") final String locale, @FormDataParam("dateFormat") final String dateFormat) {
-        return bulkImportWorkbookService.importWorkbook(legalFormType, uploadedInputStream, fileDetail, locale, dateFormat);
+        // the import type selects the import handler, so only client imports may be started from this endpoint
+        if (legalFormType == null || !(GlobalEntityType.CLIENTS_PERSON.toString().equalsIgnoreCase(legalFormType.trim())
+                || GlobalEntityType.CLIENTS_ENTITY.toString().equalsIgnoreCase(legalFormType.trim()))) {
+            throw new UnrecognizedQueryParamException("legalFormType", legalFormType, GlobalEntityType.CLIENTS_PERSON.toString(),
+                    GlobalEntityType.CLIENTS_ENTITY.toString());
+        }
+        return bulkImportWorkbookService.importWorkbook(legalFormType, uploadedInputStream, fileDetail, locale,
+                dateFormat);
     }
 
     @GET
