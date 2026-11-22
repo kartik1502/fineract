@@ -295,8 +295,7 @@ public class ClientsApiResource {
             throw new UnrecognizedQueryParamException("legalFormType", legalFormType, GlobalEntityType.CLIENTS_PERSON.toString(),
                     GlobalEntityType.CLIENTS_ENTITY.toString());
         }
-        return bulkImportWorkbookService.importWorkbook(legalFormType, uploadedInputStream, fileDetail, locale,
-                dateFormat);
+        return bulkImportWorkbookService.importWorkbook(legalFormType, uploadedInputStream, fileDetail, locale, dateFormat);
     }
 
     @GET
