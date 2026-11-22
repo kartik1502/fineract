@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +153,8 @@ class GLClosureIntegrationTest extends FeignIntegrationTest {
                     final GetGlClosureResponse expectedClosure = new GetGlClosureResponse().id(closureId).officeId(officeId)
                             .officeName(officeName).closingDate(closingDate).deleted(false).createdDate(details.getCreatedDate())
                             .lastUpdatedDate(details.getLastUpdatedDate()).createdByUserId(creatorId).createdByUsername(Backend.USERNAME)
-                            .lastUpdatedByUserId(updaterId).lastUpdatedByUsername(updaterName).comments(comments);
+                            .lastUpdatedByUserId(updaterId).lastUpdatedByUsername(updaterName).comments(comments)
+                            .allowedOffices(Collections.emptyList());
 
                     final List<GetGlClosureResponse> closures = retrieveClosures(officeId);
                     Assertions.assertThat(closures).hasSize(2);

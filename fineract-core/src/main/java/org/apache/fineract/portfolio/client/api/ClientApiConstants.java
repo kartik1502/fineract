@@ -18,6 +18,10 @@
  */
 package org.apache.fineract.portfolio.client.api;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @SuppressWarnings({ "HideUtilityClassConstructor" })
 public class ClientApiConstants {
 
@@ -129,4 +133,7 @@ public class ClientApiConstants {
 
     // template related part of response
     public static final String datatables = "datatables";
+
+    public static final Set<String> CLIENT_ACCOUNTS_DATA_PARAMETERS = new HashSet<>(
+            Arrays.asList("loanAccounts", "savingsAccounts", "shareAccounts", "workingCapitalLoanAccounts"));
 }

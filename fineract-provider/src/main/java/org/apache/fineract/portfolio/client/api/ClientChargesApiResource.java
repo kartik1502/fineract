@@ -85,7 +85,7 @@ public class ClientChargesApiResource {
     public Page<ClientChargeData> retrieveAllClientCharges(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
             @DefaultValue(ClientApiConstants.CLIENT_CHARGE_QUERY_PARAM_STATUS_VALUE_ALL) @QueryParam(ClientApiConstants.CLIENT_CHARGE_QUERY_PARAM_STATUS) @Parameter(description = "chargeStatus") final String chargeStatus,
             @QueryParam("pendingPayment") @Parameter(description = "pendingPayment") final Boolean pendingPayment,
-            @Context final UriInfo uriInfo, @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
+            @QueryParam("limit") @Parameter(description = "limit") final Integer limit,
             @QueryParam("offset") @Parameter(description = "offset") final Integer offset) {
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME);
         if (!(is(chargeStatus, ClientApiConstants.CLIENT_CHARGE_QUERY_PARAM_STATUS_VALUE_ALL)
@@ -110,8 +110,7 @@ public class ClientChargesApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve client charge template", operationId = "retrieveTemplateClientCharge")
     @AlternativeOperationId("retrieveTemplate_4")
-    public ClientChargeData retrieveTemplate(@Context final UriInfo uriInfo,
-            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
+    public ClientChargeData retrieveTemplate(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_CHARGES_RESOURCE_NAME);
 
@@ -124,7 +123,7 @@ public class ClientChargesApiResource {
     @Path("{chargeId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Charge", operationId = "retrieveOneClientCharge", description = "Example Requests:\n"
-            + "clients/1/charges/1\n" + "\n" + "\n" + "clients/1/charges/1?fields=name,id")
+            + "clients/1/charges/1")
     @AlternativeOperationId("retrieveClientCharge")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientChargesApiResourceSwagger.GetClientsClientIdChargesResponse.GetClientsChargesPageItems.class)))
     public ClientChargeData retrieveClientCharge(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,

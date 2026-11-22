@@ -27,9 +27,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.UriInfo;
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +68,7 @@ public class InternalClientInformationApiResource implements InitializingBean {
     @AlternativeOperationId("getClientAuditFields")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientAuditFieldsData.class)))
     @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
-    public ClientAuditFieldsData getClientAuditFields(@Context final UriInfo uriInfo, @PathParam("clientId") Long clientId) {
+    public ClientAuditFieldsData getClientAuditFields(@PathParam("clientId") Long clientId) {
         log.warn("------------------------------------------------------------");
         log.warn("                                                            ");
         log.warn("Fetching client with {}", clientId);

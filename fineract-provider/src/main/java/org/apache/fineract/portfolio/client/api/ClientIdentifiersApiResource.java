@@ -76,7 +76,7 @@ public class ClientIdentifiersApiResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List all Identifiers for a Client", operationId = "retrieveAllClientIdentifiers", description = "Example Requests:\n"
-            + "clients/1/identifiers\n" + "\n" + "\n" + "clients/1/identifiers?fields=documentKey,documentType,description")
+            + "clients/1/identifiers")
     public List<ClientIdentifierData> retrieveAllClientIdentifiers(
             @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
 
@@ -133,8 +133,7 @@ public class ClientIdentifiersApiResource {
     @Path("{identifierId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client Identifier", operationId = "retrieveOneClientIdentifier", description = "Example Requests:\n"
-            + "clients/1/identifier/2\n" + "\n" + "\n" + "clients/1/identifier/2?template=true\n" + "\n"
-            + "clients/1/identifiers/2?fields=documentKey,documentType,description")
+            + "clients/1/identifier/2\n" + "\n" + "\n" + "clients/1/identifier/2?template=true")
     @AlternativeOperationId("retrieveClientIdentifiers")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientIdentifiersApiResourceSwagger.GetClientsClientIdIdentifiersResponse.class)))
     public ClientIdentifierData retrieveClientIdentifiers(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,

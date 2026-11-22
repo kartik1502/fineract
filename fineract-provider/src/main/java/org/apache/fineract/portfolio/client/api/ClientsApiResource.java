@@ -63,7 +63,8 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.service.SqlValidator;
-import org.apache.fineract.portfolio.client.contract.ClientAccountSummaryReadService;
+import org.apache.fineract.portfolio.accountdetails.data.AccountSummaryCollectionData;
+import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.apache.fineract.portfolio.client.contract.ClientObligeeReadService;
 import org.apache.fineract.portfolio.client.contract.ClientSavingsAccountLookupReadService;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -88,7 +89,7 @@ public class ClientsApiResource {
     private final ClientTemplateReadPlatformService clientTemplateReadPlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final ClientAccountSummaryReadService clientAccountSummaryReadService;
+    private final AccountDetailsReadPlatformService clientAccountSummaryReadService;
     private final ClientSavingsAccountLookupReadService savingsAccountReadPlatformService;
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
@@ -128,8 +129,8 @@ public class ClientsApiResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "List Clients", operationId = "retrieveAllClients", description = "The list capability of clients can support pagination and sorting.\n\n"
-            + "Example Requests:\n" + "\n" + "clients\n" + "\n" + "clients?fields=displayName,officeName,timeline\n" + "\n"
-            + "clients?offset=10&limit=50\n" + "\n" + "clients?orderBy=displayName&sortOrder=DESC")
+            + "Example Requests:\n" + "\n" + "clients\n" + "\n" + "clients?offset=10&limit=50\n" + "\n"
+            + "clients?orderBy=displayName&sortOrder=DESC")
     @AlternativeOperationId("retrieveAll_21")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class)))
     public Page<ClientData> retrieveAll(@Context final UriInfo uriInfo,
@@ -156,7 +157,7 @@ public class ClientsApiResource {
     @Path("{clientId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client", operationId = "retrieveOneClient", description = "Example Requests:\n" + "\n" + "clients/1\n"
-            + "\n" + "\n" + "clients/1?template=true\n" + "\n" + "\n" + "clients/1?fields=id,displayName,officeName")
+            + "\n" + "\n" + "clients/1?template=true")
     @AlternativeOperationId("retrieveOne_11")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdResponse.class)))
     public ClientData retrieveOne(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
@@ -297,7 +298,7 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveObligeeDetails")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientsApiResourceSwagger.GetObligeeData.class))))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public List<ObligeeData> retrieveObligeeDetails(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
+    public List<ObligeeData> retrieveObligeeDetails(@PathParam("clientId") final Long clientId) {
         return retrieveClientObligeeDetails(clientId, null);
     }
 
@@ -308,7 +309,7 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveTransferTemplate")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientTransferProposalDateResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public LocalDate retrieveTransferTemplate(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
+    public LocalDate retrieveTransferTemplate(@PathParam("clientId") final Long clientId) {
         return retrieveClientTransferTemplate(clientId, null);
     }
 
@@ -316,8 +317,7 @@ public class ClientsApiResource {
     @Path("/external-id/{externalId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a Client by External Id", operationId = "retrieveOneClientByExternalId", description = "Example Requests:\n"
-            + "\n" + "clients/123-456\n" + "\n" + "\n" + "clients/123-456?template=true\n" + "\n" + "\n"
-            + "clients/123-456?fields=id,displayName,officeName")
+            + "\n" + "clients/123-456\n" + "\n" + "\n" + "clients/123-456?template=true")
     @AlternativeOperationId("retrieveOne_12")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdResponse.class)))
     public ClientData retrieveOne(@PathParam("externalId") @Parameter(description = "externalId") final String externalId,
@@ -416,7 +416,7 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveObligeeDetails_1")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientsApiResourceSwagger.GetObligeeData.class))))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public List<ObligeeData> retrieveObligeeDetails(@PathParam("externalId") final String externalId, @Context final UriInfo uriInfo) {
+    public List<ObligeeData> retrieveObligeeDetails(@PathParam("externalId") final String externalId) {
         return retrieveClientObligeeDetails(null, externalId);
     }
 
@@ -427,7 +427,7 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveTransferTemplate_1")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientTransferProposalDateResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public LocalDate retrieveTransferTemplate(@PathParam("externalId") final String externalId, @Context final UriInfo uriInfo) {
+    public LocalDate retrieveTransferTemplate(@PathParam("externalId") final String externalId) {
         return retrieveClientTransferTemplate(null, externalId);
     }
 
@@ -554,7 +554,7 @@ public class ClientsApiResource {
         ExternalId clientExternalId = ExternalIdFactory.produce(externalId);
         clientId = getResolvedClientId(clientId, clientExternalId);
 
-        return accountDetailsReadPlatformService.retrieveClientAccountDetails(clientId);
+        return clientAccountSummaryReadService.retrieveClientAccountDetails(clientId);
     }
 
     private CommandProcessingResult applyCommandOverClient(Long clientId, final String externalId, final String command,

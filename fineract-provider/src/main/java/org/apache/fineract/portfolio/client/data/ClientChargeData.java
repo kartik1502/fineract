@@ -23,11 +23,13 @@ import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Getter;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.infrastructure.core.jersey.serializer.legacy.JsonLocalDateArrayFormat;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 
 @Getter
 @SuppressWarnings("unused")
+@JsonLocalDateArrayFormat
 public final class ClientChargeData {
 
     private final Long id;
