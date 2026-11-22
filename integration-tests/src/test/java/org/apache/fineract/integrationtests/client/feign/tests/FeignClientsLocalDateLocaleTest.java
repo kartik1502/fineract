@@ -45,7 +45,6 @@ public class FeignClientsLocalDateLocaleTest extends FeignIntegrationTest {
     private FeignClientHelper clientHelper;
     private FeignChargesHelper chargesHelper;
     private static final BigDecimal CLIENT_CHARGE_AMOUNT = BigDecimal.valueOf(200);
-    private static final String CHARGE_DUE_DATE = "01 October 2026";
 
     @BeforeAll
     void setupHelpers() {
@@ -111,10 +110,6 @@ public class FeignClientsLocalDateLocaleTest extends FeignIntegrationTest {
         } catch (final Exception e) {
             throw new AssertionError("Unreadable response: " + response.body().toString(), e);
         }
-    }
-
-    private static PostClientsClientIdChargesRequest clientCharge(Long chargeId) {
-        return ChargeRequestBuilders.clientCharge(chargeId, CHARGE_DUE_DATE, CLIENT_CHARGE_AMOUNT);
     }
 
     private static PostClientsClientIdChargesRequest clientCharge(Long chargeId, String chargeDueDate) {
