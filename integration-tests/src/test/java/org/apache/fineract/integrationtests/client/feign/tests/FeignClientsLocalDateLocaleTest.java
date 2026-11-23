@@ -35,6 +35,8 @@ import org.apache.fineract.integrationtests.client.FeignIntegrationTest;
 import org.apache.fineract.integrationtests.client.feign.helpers.FeignChargesHelper;
 import org.apache.fineract.integrationtests.client.feign.helpers.FeignClientHelper;
 import org.apache.fineract.integrationtests.client.feign.modules.ChargeRequestBuilders;
+import org.apache.fineract.integrationtests.common.Utils;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -81,18 +83,23 @@ public class FeignClientsLocalDateLocaleTest extends FeignIntegrationTest {
         final Long clientID = client.getClientId();
 
         final Long chargeId = chargesHelper.createClientSpecifiedDueDateCharge(20).getResourceId();
-        final Long clientChargeId = chargesHelper.addClientCharge(clientID, clientCharge(chargeId, ACTIVATION_DATE)).getResourceId();
+        final Long clientChargeId = chargesHelper.addClientCharge(clientID, clientCharge(chargeId)).getResourceId();
         final Long clientTransactionId = chargesHelper
                 .payClientCharge(clientID, clientChargeId, ChargeRequestBuilders.payClientCharge(ACTIVATION_DATE, 10)).getTransactionId();
 
         try (Response r = fineractClient().create(ClientApiForTests.class).getClientTransaction(String.valueOf(clientID),
                 String.valueOf(clientTransactionId))) {
 
+            final var submittedOnDate = Utils.getLocalDateOfTenant();
             JsonNode jsonNode = readTree(r);
             assertDate(jsonNode.get("date"), "2026", "11", "21");
-            assertDate(jsonNode.get("submittedOnDate"), "2026", "11", "22");
+            assertDate(jsonNode.get("submittedOnDate"), getString(submittedOnDate.getYear()), getString(submittedOnDate.getMonthValue()),
+                    getString(submittedOnDate.getDayOfMonth()));
         }
+    }
 
+    private static @NonNull String getString(int value) {
+        return String.valueOf(value);
     }
 
     private void assertDate(JsonNode activationDate, String year, String month, String day) {
@@ -112,8 +119,8 @@ public class FeignClientsLocalDateLocaleTest extends FeignIntegrationTest {
         }
     }
 
-    private static PostClientsClientIdChargesRequest clientCharge(Long chargeId, String chargeDueDate) {
-        return ChargeRequestBuilders.clientCharge(chargeId, chargeDueDate, CLIENT_CHARGE_AMOUNT);
+    private static PostClientsClientIdChargesRequest clientCharge(Long chargeId) {
+        return ChargeRequestBuilders.clientCharge(chargeId, FeignClientsLocalDateLocaleTest.ACTIVATION_DATE, CLIENT_CHARGE_AMOUNT);
     }
 
     interface ClientApiForTests {

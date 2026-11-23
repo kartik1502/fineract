@@ -64,8 +64,7 @@ import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.infrastructure.security.service.SqlValidator;
-import org.apache.fineract.portfolio.accountdetails.data.AccountSummaryCollectionData;
-import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
+import org.apache.fineract.portfolio.client.contract.ClientAccountSummaryReadService;
 import org.apache.fineract.portfolio.client.contract.ClientObligeeReadService;
 import org.apache.fineract.portfolio.client.contract.ClientSavingsAccountLookupReadService;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -90,7 +89,7 @@ public class ClientsApiResource {
     private final ClientTemplateReadPlatformService clientTemplateReadPlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final AccountDetailsReadPlatformService clientAccountSummaryReadService;
+    private final ClientAccountSummaryReadService clientAccountSummaryReadService;
     private final ClientSavingsAccountLookupReadService savingsAccountReadPlatformService;
     private final BulkImportWorkbookService bulkImportWorkbookService;
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
@@ -104,8 +103,7 @@ public class ClientsApiResource {
             + "\n" + "Field Defaults\n" + "Allowed Value Lists\n\n" + "Example Request:\n" + "\n" + "clients/template")
     @AlternativeOperationId("retrieveTemplate_5")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsTemplateResponse.class)))
-    public ClientData retrieveTemplate(@Context final UriInfo uriInfo,
-            @Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
+    public ClientData retrieveTemplate(@Parameter(description = "officeId") @QueryParam("officeId") final Long officeId,
             @QueryParam("commandParam") @Parameter(description = "commandParam") final String commandParam,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
 
@@ -134,8 +132,7 @@ public class ClientsApiResource {
             + "clients?orderBy=displayName&sortOrder=DESC")
     @AlternativeOperationId("retrieveAll_21")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsResponse.class)))
-    public Page<ClientData> retrieveAll(@Context final UriInfo uriInfo,
-            @QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
+    public Page<ClientData> retrieveAll(@QueryParam("officeId") @Parameter(description = "officeId") final Long officeId,
             @QueryParam("externalId") @Parameter(description = "externalId") final String externalId,
             @QueryParam("displayName") @Parameter(description = "displayName") final String displayName,
             @QueryParam("firstName") @Parameter(description = "firstName") final String firstname,
@@ -266,9 +263,9 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveAssociatedAccounts")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public AccountSummaryCollectionData retrieveAssociatedAccounts(
-            @PathParam("clientId") @Parameter(description = "clientId") final Long clientId) {
-        return retrieveClientAccounts(clientId, null);
+    public String retrieveAssociatedAccounts(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId,
+            @Context final UriInfo uriInfo) {
+        return retrieveClientAccounts(clientId, null, uriInfo);
     }
 
     @GET
@@ -342,9 +339,9 @@ public class ClientsApiResource {
     @AlternativeOperationId("retrieveAssociatedAccounts_1")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdAccountsResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request")
-    public AccountSummaryCollectionData retrieveAssociatedAccounts(
-            @PathParam("externalId") @Parameter(description = "externalId") final String externalId) {
-        return retrieveClientAccounts(null, externalId);
+    public String retrieveAssociatedAccounts(@PathParam("externalId") @Parameter(description = "externalId") final String externalId,
+            @Context final UriInfo uriInfo) {
+        return retrieveClientAccounts(null, externalId, uriInfo);
     }
 
     @PUT
@@ -556,12 +553,13 @@ public class ClientsApiResource {
         return commandsSourceWritePlatformService.logCommandSource(commandRequest);
     }
 
-    private AccountSummaryCollectionData retrieveClientAccounts(Long clientId, final String externalId) {
+    private String retrieveClientAccounts(Long clientId, final String externalId, final UriInfo uriInfo) {
         context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         ExternalId clientExternalId = ExternalIdFactory.produce(externalId);
         clientId = getResolvedClientId(clientId, clientExternalId);
 
-        return clientAccountSummaryReadService.retrieveClientAccountDetails(clientId);
+        final ApiRequestJsonSerializationSettings settings = apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return clientAccountSummaryReadService.retrieveClientAccountSummaryAsJson(clientId, settings);
     }
 
     private CommandProcessingResult applyCommandOverClient(Long clientId, final String externalId, final String command,
