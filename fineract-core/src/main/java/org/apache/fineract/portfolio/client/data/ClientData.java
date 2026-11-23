@@ -33,6 +33,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
+import org.apache.fineract.infrastructure.core.jersey.serializer.legacy.JsonLocalDateArrayFormat;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -47,6 +48,7 @@ import org.apache.fineract.portfolio.savings.data.SavingsProductData;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonLocalDateArrayFormat
 public final class ClientData implements Comparable<ClientData>, Serializable {
 
     private Long id;

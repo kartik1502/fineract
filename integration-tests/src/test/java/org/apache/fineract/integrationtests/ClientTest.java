@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.client.feign.util.CallFailedRuntimeException;
 import org.apache.fineract.client.models.AddressCreateResponse;
 import org.apache.fineract.client.models.AddressData;
@@ -55,6 +56,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+@Slf4j
 public class ClientTest extends FeignIntegrationTest {
 
     private static final SecureRandom rand = new SecureRandom();
